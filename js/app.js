@@ -35,10 +35,27 @@ function leerDatosCurso(curso){
         cantidad: 1 
     }
 
-    articulosCarrito = [...articulosCarrito, infoCurso];
+    //revisa si un elemento existe en el carrito 
+    const existe = articulosCarrito.some( curso => curso.id === infoCurso.id );
+
+    if (existe){
+    //actualizamos cantidad
+    const cursos = articulosCarrito.map( curso => {
+        if( curso.id === infoCurso.id ){
+            curso.cantidad++;
+            return curso;//objeto actualizado            
+        }else{
+            return curso;//objetos que no son duplicados
+        }
+        } );
+        articulosCarrito = [...cursos];
+    }else{  
+    articulosCarrito = [...articulosCarrito, infoCurso];  //agregamos el curso al carrito
+    }
 
     carritoHTML();
 }
+
 
 //muestra carrito de compras en html
 function carritoHTML() { 
@@ -47,13 +64,20 @@ function carritoHTML() {
     limpiarHTML();
 
     articulosCarrito.forEach( curso => {
+        const { imagen, titulo, precio, cantidad, id } = curso;
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>
-                ${curso.titulo}
+            <img src="${imagen}" width ="100">
             </td>
-        `;
+            <td>${titulo}</td>
+            <td>${precio}</td>
+            <td>${cantidad}</td>
+            <td>
+                 <a href="#" class="borrar-curso" data-id="${id}"> X </a>
+            </td>
 
+        `;
         //aagrega el html en el tbody
         contenedorCarrito.appendChild(row);
 
@@ -62,7 +86,6 @@ function carritoHTML() {
 
 //elimina cursos del tbody
 function limpiarHTML() {
-
     while (contenedorCarrito.firstChild) {
         contenedorCarrito.removeChild(contenedorCarrito.firstChild)
     }
